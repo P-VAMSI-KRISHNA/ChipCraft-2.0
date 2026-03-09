@@ -1,9 +1,8 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { socket } from "@/lib/socket";
 import { API_BASE } from "@/lib/api";
 import type { RoundNumber } from "@/types/hackathon";
 
-// marksMap: teamId → { 1?: number, 2?: number, 3?: number, 4?: number }
 type MarksMap = Record<string, Partial<Record<RoundNumber, number>>>;
 
 interface MarksContextValue {
@@ -17,7 +16,7 @@ const MarksContext = createContext<MarksContextValue | undefined>(undefined);
 export function MarksProvider({ children }: { children: ReactNode }) {
   const [marksMap, setMarksMap] = useState<MarksMap>({});
 
-  useEffect(() => {
+  const fetchMarks = useCallback(() => {
     fetch(`${API_BASE}/api/marks`)
       .then(res => res.json())
       .then(data => {
@@ -29,23 +28,16 @@ export function MarksProvider({ children }: { children: ReactNode }) {
         setMarksMap(newMap);
       })
       .catch(console.error);
-
-    const onUpdate = ({ teamId, round, score }: { teamId: string, round: RoundNumber, score: number | null }) => {
-      setMarksMap(prev => {
-        const existing = prev[teamId] ?? {};
-        if (score === null) {
-          const { [round]: _, ...rest } = existing;
-          return { ...prev, [teamId]: rest };
-        }
-        return { ...prev, [teamId]: { ...existing, [round]: score } };
-      });
-    };
-
-    socket.on("marks-updated", onUpdate);
-    return () => {
-      socket.off("marks-updated", onUpdate);
-    };
   }, []);
+
+  useEffect(() => {
+    fetchMarks();
+
+    socket.on("marks-updated", fetchMarks);
+    return () => {
+      socket.off("marks-updated", fetchMarks);
+    };
+  }, [fetchMarks]);
 
   const setMark = async (teamId: string, round: RoundNumber, score: number | null) => {
     try {
@@ -54,6 +46,7 @@ export function MarksProvider({ children }: { children: ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ teamId, round, score })
       });
+      fetchMarks();
     } catch (err) { console.error(err); }
   };
 

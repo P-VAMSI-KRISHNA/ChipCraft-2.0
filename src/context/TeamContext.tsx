@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { socket } from "@/lib/socket";
 import { API_BASE } from "@/lib/api";
 import type { Team } from "@/types/hackathon";
@@ -15,29 +15,26 @@ const TeamContext = createContext<TeamContextValue | undefined>(undefined);
 export function TeamProvider({ children }: { children: ReactNode }) {
   const [teams, setTeams] = useState<Team[]>([]);
 
-  useEffect(() => {
+  const fetchTeams = useCallback(() => {
     fetch(`${API_BASE}/api/teams`)
       .then(res => res.json())
       .then(data => setTeams(data))
       .catch(console.error);
+  }, []);
 
-    const onAdd = (team: Team) => setTeams(prev => {
-      if (prev.some(t => t.id === team.id)) return prev;
-      return [...prev, team];
-    });
-    const onUpdate = (team: Team) => setTeams(prev => prev.map(t => (t.id === team.id ? team : t)));
-    const onDelete = ({ id }: { id: string }) => setTeams(prev => prev.filter(t => t.id !== id));
+  useEffect(() => {
+    fetchTeams();
 
-    socket.on("team-added", onAdd);
-    socket.on("team-updated", onUpdate);
-    socket.on("team-deleted", onDelete);
+    socket.on("team-added", fetchTeams);
+    socket.on("team-updated", fetchTeams);
+    socket.on("team-deleted", fetchTeams);
 
     return () => {
-      socket.off("team-added", onAdd);
-      socket.off("team-updated", onUpdate);
-      socket.off("team-deleted", onDelete);
+      socket.off("team-added", fetchTeams);
+      socket.off("team-updated", fetchTeams);
+      socket.off("team-deleted", fetchTeams);
     };
-  }, []);
+  }, [fetchTeams]);
 
   const addTeam = async (team: Omit<Team, "id">) => {
     const tempId = `t${Date.now()}`;
@@ -48,6 +45,7 @@ export function TeamProvider({ children }: { children: ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTeam)
       });
+      fetchTeams();
     } catch (err) { console.error(err); }
   };
 
@@ -56,20 +54,19 @@ export function TeamProvider({ children }: { children: ReactNode }) {
       const existing = teams.find(t => t.id === id);
       if (!existing) return;
       const updated = { ...existing, ...updates };
-
       await fetch(`${API_BASE}/api/teams/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated)
       });
+      fetchTeams();
     } catch (err) { console.error(err); }
   };
 
   const deleteTeam = async (id: string) => {
     try {
-      await fetch(`${API_BASE}/api/teams/${id}`, {
-        method: "DELETE"
-      });
+      await fetch(`${API_BASE}/api/teams/${id}`, { method: "DELETE" });
+      fetchTeams();
     } catch (err) { console.error(err); }
   };
 

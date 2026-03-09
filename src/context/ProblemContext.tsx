@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { socket } from "@/lib/socket";
 import { API_BASE } from "@/lib/api";
 import type { ProblemStatement } from "@/types/hackathon";
@@ -15,29 +15,26 @@ const ProblemContext = createContext<ProblemContextValue | undefined>(undefined)
 export function ProblemProvider({ children }: { children: ReactNode }) {
   const [problemStatements, setProblemStatements] = useState<ProblemStatement[]>([]);
 
-  useEffect(() => {
+  const fetchProblems = useCallback(() => {
     fetch(`${API_BASE}/api/problems`)
       .then(res => res.json())
       .then(data => setProblemStatements(data))
       .catch(console.error);
+  }, []);
 
-    const onAdd = (ps: ProblemStatement) => setProblemStatements(prev => {
-      if (prev.some(p => p.id === ps.id)) return prev;
-      return [...prev, ps];
-    });
-    const onUpdate = (ps: ProblemStatement) => setProblemStatements(prev => prev.map(p => (p.id === ps.id ? ps : p)));
-    const onDelete = ({ id }: { id: string }) => setProblemStatements(prev => prev.filter(p => p.id !== id));
+  useEffect(() => {
+    fetchProblems();
 
-    socket.on("problem-added", onAdd);
-    socket.on("problem-updated", onUpdate);
-    socket.on("problem-deleted", onDelete);
+    socket.on("problem-added", fetchProblems);
+    socket.on("problem-updated", fetchProblems);
+    socket.on("problem-deleted", fetchProblems);
 
     return () => {
-      socket.off("problem-added", onAdd);
-      socket.off("problem-updated", onUpdate);
-      socket.off("problem-deleted", onDelete);
+      socket.off("problem-added", fetchProblems);
+      socket.off("problem-updated", fetchProblems);
+      socket.off("problem-deleted", fetchProblems);
     };
-  }, []);
+  }, [fetchProblems]);
 
   const addProblem = async (ps: Omit<ProblemStatement, "id">) => {
     const tempId = `ps${Date.now()}`;
@@ -48,6 +45,7 @@ export function ProblemProvider({ children }: { children: ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newPs)
       });
+      fetchProblems();
     } catch (err) { console.error(err); }
   };
 
@@ -56,20 +54,19 @@ export function ProblemProvider({ children }: { children: ReactNode }) {
       const existing = problemStatements.find(p => p.id === id);
       if (!existing) return;
       const updated = { ...existing, ...updates };
-
       await fetch(`${API_BASE}/api/problems/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated)
       });
+      fetchProblems();
     } catch (err) { console.error(err); }
   };
 
   const deleteProblem = async (id: string) => {
     try {
-      await fetch(`${API_BASE}/api/problems/${id}`, {
-        method: "DELETE"
-      });
+      await fetch(`${API_BASE}/api/problems/${id}`, { method: "DELETE" });
+      fetchProblems();
     } catch (err) { console.error(err); }
   };
 
