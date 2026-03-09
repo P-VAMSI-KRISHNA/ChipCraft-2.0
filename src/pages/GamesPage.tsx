@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { Gamepad2, RotateCcw, Trophy, Star, ChevronRight, Zap } from "lucide-react";
+import { Gamepad2, RotateCcw, Trophy, Star, ChevronRight, Zap, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useFunZone } from "@/context/FunZoneContext";
 
 // ──────────────────────────────────────────────────────────────────
 //  GAME 1 — Memory Match (Electronics Components) 
@@ -511,6 +512,7 @@ const GAMES = [
 ];
 
 export default function GamesPage() {
+  const { funZoneEnabled } = useFunZone();
   const [activeGame, setActiveGame] = useState<string | null>(null);
 
   const active = GAMES.find((g) => g.id === activeGame);
@@ -521,18 +523,44 @@ export default function GamesPage() {
       <main className="container py-12">
         <div className="mx-auto max-w-4xl">
           <div className="mb-10 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-2 neon-border-cyan">
-              <Gamepad2 className="h-4 w-4 text-secondary" />
-              <span className="font-mono text-sm text-secondary">BREAK TIME GAMES</span>
+            <div className={`mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 ${funZoneEnabled ? "border-secondary/30 bg-secondary/10 neon-border-cyan" : "border-border bg-muted/30"}`}>
+              <Gamepad2 className={`h-4 w-4 ${funZoneEnabled ? "text-secondary" : "text-muted-foreground"}`} />
+              <span className={`font-mono text-sm ${funZoneEnabled ? "text-secondary" : "text-muted-foreground"}`}>BREAK TIME GAMES</span>
             </div>
-            <h1 className="font-pixel text-2xl text-primary neon-glow mb-3">FUN ZONE</h1>
+            <h1 className={`font-pixel text-2xl mb-3 ${funZoneEnabled ? "text-primary neon-glow" : "text-muted-foreground"}`}>FUN ZONE</h1>
             <p className="text-muted-foreground font-mono">
-              Take a break, recharge and play between rounds!
+              {funZoneEnabled ? "Take a break, recharge and play between rounds!" : "Fun Zone is currently not active."}
             </p>
           </div>
 
-          {/* Game selector */}
-          {!activeGame && (
+          {/* Fun Zone Not Active */}
+          {!funZoneEnabled && (
+            <div className="flex flex-col items-center justify-center py-20 gap-6">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-border bg-muted/20">
+                <Lock className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <div className="text-center max-w-md">
+                <h2 className="font-pixel text-sm text-muted-foreground mb-3">NOT ACTIVE YET</h2>
+                <p className="font-mono text-sm text-muted-foreground leading-relaxed">
+                  The Fun Zone will open during scheduled breaks. Keep an eye out — the organizers will announce when it's time to play!
+                </p>
+              </div>
+              <div className="rounded-lg border border-border bg-card/50 px-6 py-4 text-center">
+                <p className="font-pixel text-[9px] text-muted-foreground mb-1">GAMES AVAILABLE WHEN OPENED</p>
+                <div className="flex justify-center gap-4 mt-2">
+                  {GAMES.map((g) => (
+                    <div key={g.id} className="flex flex-col items-center gap-1">
+                      <span className="text-2xl opacity-40">{g.emoji}</span>
+                      <span className="font-mono text-[10px] text-muted-foreground/60">{g.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Game selector — only when enabled */}
+          {funZoneEnabled && !activeGame && (
             <div className="grid gap-6 md:grid-cols-3">
               {GAMES.map((game) => (
                 <Card
@@ -564,7 +592,7 @@ export default function GamesPage() {
           )}
 
           {/* Active game */}
-          {active && (
+          {funZoneEnabled && active && (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Button
@@ -596,13 +624,15 @@ export default function GamesPage() {
             </div>
           )}
 
-          {/* Stars row */}
-          <div className="mt-12 flex items-center justify-center gap-2 text-muted-foreground">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-4 w-4 text-warning fill-warning" />
-            ))}
-            <span className="font-mono text-sm ml-2">Have fun and come back refreshed!</span>
-          </div>
+          {/* Stars row — only when enabled */}
+          {funZoneEnabled && (
+            <div className="mt-12 flex items-center justify-center gap-2 text-muted-foreground">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-4 w-4 text-warning fill-warning" />
+              ))}
+              <span className="font-mono text-sm ml-2">Have fun and come back refreshed!</span>
+            </div>
+          )}
         </div>
       </main>
       <Footer />

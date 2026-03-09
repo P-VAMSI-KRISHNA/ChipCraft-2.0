@@ -74,10 +74,6 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "Byte Busters",
     title: "Smart Traffic Light Controller",
     description: "Design and build a microcontroller-based traffic light system that adapts signal timing based on simulated traffic density using IR sensors.",
-    difficulty: "Hard",
-    components: ["Arduino Uno", "IR Sensors x4", "LEDs (R/Y/G)", "Resistors", "Breadboard"],
-    hints: ["Use interrupts for sensor reading", "Consider a state machine approach"],
-    roundNumber: 2,
   },
   {
     id: "ps2",
@@ -85,10 +81,6 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "Circuit Breakers",
     title: "Wireless Temperature Monitor",
     description: "Build a wireless temperature monitoring system using RF modules that displays real-time data on an LCD screen.",
-    difficulty: "Medium",
-    components: ["Arduino Nano x2", "DHT11 Sensor", "433MHz RF Pair", "16x2 LCD", "Breadboard"],
-    hints: ["Start with wired communication first", "Use the VirtualWire library"],
-    roundNumber: 2,
   },
   {
     id: "ps3",
@@ -96,10 +88,6 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "Ohm My God",
     title: "Voice-Controlled LED Matrix",
     description: "Create an 8x8 LED matrix display that responds to voice commands to show patterns, text, and animations.",
-    difficulty: "Hard",
-    components: ["Arduino Mega", "8x8 LED Matrix", "MAX7219 Driver", "Bluetooth Module HC-05", "Smartphone"],
-    hints: ["Use a phone app for voice-to-text", "Pre-program common patterns"],
-    roundNumber: 2,
   },
   {
     id: "ps4",
@@ -107,10 +95,6 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "The Resistors",
     title: "Automatic Plant Watering System",
     description: "Design a soil moisture-based automatic watering system with an LCD status display and manual override.",
-    difficulty: "Easy",
-    components: ["Arduino Uno", "Soil Moisture Sensor", "Water Pump + Relay", "16x2 LCD", "Push Button"],
-    hints: ["Calibrate the moisture threshold first", "Add a delay between watering cycles"],
-    roundNumber: 2,
   },
   {
     id: "ps5",
@@ -118,10 +102,6 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "Volt Vortex",
     title: "Digital Oscilloscope (Basic)",
     description: "Build a basic digital oscilloscope using an Arduino that can display waveforms on a computer via serial communication.",
-    difficulty: "Hard",
-    components: ["Arduino Uno", "Op-Amp LM358", "Resistors/Capacitors", "USB Cable", "Processing IDE"],
-    hints: ["Sample at maximum ADC speed", "Use Processing for visualization"],
-    roundNumber: 2,
   },
   {
     id: "ps6",
@@ -129,10 +109,6 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "Spark Squad",
     title: "IR Remote Controlled Robot",
     description: "Build a simple robot that can be controlled using an IR remote with forward, backward, left, right, and stop commands.",
-    difficulty: "Medium",
-    components: ["Arduino Uno", "L298N Motor Driver", "DC Motors x2", "IR Receiver", "TV Remote", "Chassis Kit"],
-    hints: ["Decode your remote buttons first", "Start with one motor direction"],
-    roundNumber: 2,
   },
   {
     id: "ps7",
@@ -140,10 +116,6 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "Diode Dynamos",
     title: "Smart Door Lock System",
     description: "Create a keypad-based door lock system with a servo motor, wrong-attempt buzzer alarm, and EEPROM password storage.",
-    difficulty: "Medium",
-    components: ["Arduino Uno", "4x4 Keypad", "Servo Motor", "Buzzer", "16x2 LCD", "Breadboard"],
-    hints: ["Store password in EEPROM for persistence", "Add a lockout after 3 wrong attempts"],
-    roundNumber: 2,
   },
   {
     id: "ps8",
@@ -151,25 +123,20 @@ export const mockProblemStatements: ProblemStatement[] = [
     teamName: "PCB Pirates",
     title: "Pulse Oximeter Display",
     description: "Build a simple pulse oximeter that measures heart rate using an IR LED and photodiode, displaying BPM on an OLED screen.",
-    difficulty: "Hard",
-    components: ["Arduino Nano", "MAX30100 Sensor", "0.96\" OLED Display", "Breadboard", "Wires"],
-    hints: ["Use the MAX30100 library", "Filter noise with moving average"],
-    roundNumber: 2,
   },
 ];
 
-export const mockTeams: Team[] = Array.from({ length: 40 }, (_, index) => {
-  const teamNumber = index + 1;
-  const ps = mockProblemStatements.find((p) => p.teamNumber === teamNumber);
-
-  return {
-    id: `t${teamNumber}`,
-    teamNumber,
-    teamName: ps?.teamName ?? `Team ${teamNumber.toString().padStart(2, "0")}`,
-    members: ["Member 1", "Member 2", "Member 3"],
-    currentRound: 1 as const,
-  };
-});
+// Initial teams roster — admin can freely add/remove/edit these
+export const mockTeams: Team[] = [
+  { id: "t1", teamNumber: 1, teamName: "Byte Busters", members: [] },
+  { id: "t2", teamNumber: 2, teamName: "Circuit Breakers", members: [] },
+  { id: "t3", teamNumber: 3, teamName: "Ohm My God", members: [] },
+  { id: "t4", teamNumber: 4, teamName: "The Resistors", members: [] },
+  { id: "t5", teamNumber: 5, teamName: "Volt Vortex", members: [] },
+  { id: "t6", teamNumber: 6, teamName: "Spark Squad", members: [] },
+  { id: "t7", teamNumber: 7, teamName: "Diode Dynamos", members: [] },
+  { id: "t8", teamNumber: 8, teamName: "PCB Pirates", members: [] },
+];
 
 export const mockGames: Game[] = [
   {

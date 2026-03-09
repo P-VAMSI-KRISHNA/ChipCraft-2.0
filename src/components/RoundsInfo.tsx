@@ -2,7 +2,6 @@ import { BookOpen, Pencil, Wrench, Presentation, Clock, ChevronRight } from "luc
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { mockRounds } from "@/data/hackathonData";
-import RoundTimer from "@/components/RoundTimer";
 
 const roundIcons = [BookOpen, Pencil, Wrench, Presentation];
 const roundColors = [
@@ -52,10 +51,7 @@ const RoundsInfo = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <CardDescription className="text-foreground/70">{round.description}</CardDescription>
-                  
-                  {round.startTime && (
-                    <RoundTimer targetTime={round.startTime} label={`Round ${round.number} starts in`} />
-                  )}
+
 
                   <div className="space-y-2">
                     <p className="font-pixel text-[10px] text-muted-foreground">INSTRUCTIONS:</p>

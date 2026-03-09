@@ -116,7 +116,10 @@ export default {
   			neon: 'var(--shadow-neon)'
   		},
   		fontFamily: {
-  			sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+  			sans: ['Lora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+  			rye: ['Rye', 'cursive'],
+  			typewriter: ['"Special Elite"', 'monospace'],
+  			serif: ['"Playfair Display"', 'ui-serif', 'Georgia', 'serif'],
   			pixel: ['"Press Start 2P"', 'monospace'],
   			mono: ['Space Mono', 'ui-monospace', 'monospace']
   		}

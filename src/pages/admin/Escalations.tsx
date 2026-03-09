@@ -184,17 +184,6 @@ export default function Escalations() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Live Timer Display */}
-                <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-center">
-                  <p className="font-pixel text-[10px] text-muted-foreground mb-1">ELAPSED TIME</p>
-                  <span className={`font-pixel text-3xl ${timer.running ? "text-primary neon-glow" : "text-foreground/60"}`}>
-                    {formatTime(timer.elapsed)}
-                  </span>
-                  {timer.running && (
-                    <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-accent animate-pulse" />
-                  )}
-                </div>
-
                 {/* Progress Bar */}
                 <div>
                   <div className="flex justify-between text-xs font-mono text-muted-foreground mb-1">

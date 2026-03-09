@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Timer, Users, Trophy, CheckCheck } from "lucide-react";
+import { Sparkles, Timer, Users, Trophy, CheckCheck, Gamepad2, Power } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { mockGames, mockTeams } from "@/data/hackathonData";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { mockGames } from "@/data/hackathonData";
+import { useTeamContext } from "@/context/TeamContext";
 import { useToast } from "@/hooks/use-toast";
+import { useFunZone } from "@/context/FunZoneContext";
 
 type ScheduledGameState = Record<string, string>;
 type AnnouncedGameState = Record<string, boolean>;
@@ -26,6 +30,9 @@ const breakOptions = [
 
 export default function Games() {
   const { toast } = useToast();
+  const { funZoneEnabled, setFunZoneEnabled } = useFunZone();
+  const { teams } = useTeamContext();
+
   const [scheduledGames, setScheduledGames] = useState<ScheduledGameState>(() => {
     const initial: ScheduledGameState = {};
     mockGames.forEach((game) => {
@@ -36,10 +43,9 @@ export default function Games() {
 
   const [announcedGames, setAnnouncedGames] = useState<AnnouncedGameState>({});
 
-  const totalTeams = mockTeams.length;
+  const totalTeams = teams.length;
 
   const handleScheduleChange = (gameId: string, slot: string) => {
-    // If it was announced, un-announce when re-scheduling
     if (announcedGames[gameId]) {
       setAnnouncedGames((prev) => ({ ...prev, [gameId]: false }));
     }
@@ -62,7 +68,6 @@ export default function Games() {
     }
 
     if (announcedGames[gameId]) {
-      // Toggle off
       setAnnouncedGames((prev) => ({ ...prev, [gameId]: false }));
       toast({
         title: "Announcement retracted",
@@ -75,6 +80,16 @@ export default function Games() {
         description: `Teams will be notified to play during: ${slot}`,
       });
     }
+  };
+
+  const handleFunZoneToggle = (enabled: boolean) => {
+    setFunZoneEnabled(enabled);
+    toast({
+      title: enabled ? "🎮 Fun Zone Enabled!" : "Fun Zone Disabled",
+      description: enabled
+        ? "Participants can now access the Fun Zone at /games."
+        : "The Fun Zone is now hidden from participants.",
+    });
   };
 
   const scheduledCount = new Set(
@@ -91,6 +106,57 @@ export default function Games() {
           Admin-only control panel for mini-games between teams during 24-hour breaks.
         </p>
       </div>
+
+      {/* Fun Zone Master Toggle */}
+      <Card className={`border-2 transition-all ${funZoneEnabled ? "border-accent/50 bg-accent/5" : "border-border"}`}>
+        <CardHeader>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${funZoneEnabled ? "bg-accent/20 text-accent" : "bg-muted text-muted-foreground"}`}>
+                <Gamepad2 className="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle className="font-mono flex items-center gap-2">
+                  Fun Zone Access
+                  <Badge
+                    variant="outline"
+                    className={`font-pixel text-[9px] ${funZoneEnabled ? "border-accent text-accent bg-accent/10" : "border-muted-foreground text-muted-foreground"}`}
+                  >
+                    {funZoneEnabled ? "ENABLED" : "DISABLED"}
+                  </Badge>
+                </CardTitle>
+                <CardDescription className="font-mono">
+                  {funZoneEnabled
+                    ? "Participants can access the Fun Zone at /games right now."
+                    : "Fun Zone is hidden from participants. Enable it during a break."}
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Label htmlFor="funzone-toggle" className="font-mono text-sm cursor-pointer">
+                {funZoneEnabled ? "Disable" : "Enable"} Fun Zone
+              </Label>
+              <Switch
+                id="funzone-toggle"
+                checked={funZoneEnabled}
+                onCheckedChange={handleFunZoneToggle}
+                className="data-[state=checked]:bg-accent"
+              />
+            </div>
+          </div>
+        </CardHeader>
+        {funZoneEnabled && (
+          <CardContent className="pt-0">
+            <div className="flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 px-4 py-3">
+              <Power className="h-4 w-4 text-accent animate-pulse" />
+              <p className="font-mono text-sm text-accent">
+                Fun Zone is <strong>LIVE</strong> — participants can play at{" "}
+                <span className="underline">/games</span>
+              </p>
+            </div>
+          </CardContent>
+        )}
+      </Card>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Card>

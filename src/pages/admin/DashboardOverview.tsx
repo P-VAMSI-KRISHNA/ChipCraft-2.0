@@ -3,26 +3,26 @@ import {
   List, 
   Clock, 
   Cpu,
-  TrendingUp,
   ArrowRight
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { mockProblemStatements, mockRounds, mockTeams } from "@/data/hackathonData";
+import { mockRounds } from "@/data/hackathonData";
+import { useProblemContext } from "@/context/ProblemContext";
+import { useTeamContext } from "@/context/TeamContext";
 import { Link } from "react-router-dom";
 
-const difficultyColors: Record<string, string> = {
-  Easy: "bg-accent/10 text-accent",
-  Medium: "bg-warning/10 text-warning",
-  Hard: "bg-destructive/10 text-destructive",
-};
-
 export default function DashboardOverview() {
+  const { problemStatements } = useProblemContext();
+  const { teams } = useTeamContext();
+
+  const activeRound = mockRounds.find((r) => r.status === "active") ?? null;
+
   const stats = [
-    { title: "Total Teams", value: mockTeams.length, icon: Users, color: "text-secondary" },
-    { title: "Problem Statements", value: mockProblemStatements.length, icon: List, color: "text-primary" },
-    { title: "Active Round", value: "1", icon: Clock, color: "text-accent" },
+    { title: "Total Teams", value: teams.length, icon: Users, color: "text-secondary" },
+    { title: "Problem Statements", value: problemStatements.length, icon: List, color: "text-primary" },
+    { title: "Active Round", value: activeRound?.number ?? "—", icon: Clock, color: "text-accent" },
     { title: "Total Rounds", value: mockRounds.length, icon: Cpu, color: "text-warning" },
   ];
 
@@ -63,25 +63,20 @@ export default function DashboardOverview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mockProblemStatements.slice(0, 5).map((ps) => (
+            {problemStatements.slice(0, 5).map((ps) => (
               <div key={ps.id} className="flex items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-muted/50">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-pixel text-xs">
                   #{ps.teamNumber}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-xs text-muted-foreground">{ps.teamName}</span>
-                    <Badge className={difficultyColors[ps.difficulty]} variant="outline">
-                      {ps.difficulty}
-                    </Badge>
-                  </div>
+                  <span className="font-mono text-xs text-muted-foreground">{ps.teamName}</span>
                   <p className="font-medium truncate">{ps.title}</p>
                 </div>
-                <Badge variant="outline" className="font-mono text-xs">
-                  Round {ps.roundNumber}
-                </Badge>
               </div>
             ))}
+            {problemStatements.length === 0 && (
+              <p className="text-sm text-muted-foreground font-mono text-center py-4">No problem statements yet.</p>
+            )}
           </div>
         </CardContent>
       </Card>

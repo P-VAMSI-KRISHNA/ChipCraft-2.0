@@ -20,10 +20,6 @@ export interface ProblemStatement {
   teamName: string;
   title: string;
   description: string;
-  difficulty: "Easy" | "Medium" | "Hard";
-  components: string[];
-  hints: string[];
-  roundNumber: RoundNumber;
 }
 
 export interface Team {
@@ -31,7 +27,6 @@ export interface Team {
   teamNumber: number;
   teamName: string;
   members: string[];
-  currentRound: RoundNumber;
 }
 
 export interface Game {
@@ -43,3 +38,9 @@ export interface Game {
   maxTeams: number;
   breakSlot: string;
 }
+
+// Marks for a team per round: teamId → { round1?: number, round2?: number, ... }
+export type TeamMarks = {
+  teamId: string;
+  scores: Partial<Record<RoundNumber, number>>;
+};

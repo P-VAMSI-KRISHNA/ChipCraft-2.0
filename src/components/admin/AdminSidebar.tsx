@@ -9,9 +9,11 @@ import {
   ChevronLeft,
   Gamepad2,
   LogOut,
+  Trophy,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { mockTeams } from "@/data/hackathonData";
+import { mockRounds } from "@/data/hackathonData";
+import { useTeamContext } from "@/context/TeamContext";
 import { useAuth } from "@/context/AuthContext";
 import {
   Sidebar,
@@ -33,6 +35,7 @@ const mainNavItems = [
   { title: "Problem Statements", url: "/admin/problems", icon: List },
   { title: "Teams", url: "/admin/teams", icon: Users },
   { title: "Round Control", url: "/admin/rounds", icon: Clock },
+  { title: "Evaluation", url: "/admin/evaluation", icon: Trophy },
   { title: "Reports", url: "/admin/reports", icon: BarChart3 },
   { title: "Fun Games", url: "/admin/games", icon: Gamepad2 },
 ];
@@ -40,6 +43,7 @@ const mainNavItems = [
 export function AdminSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { teams } = useTeamContext();
   const { logout } = useAuth();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
@@ -93,18 +97,21 @@ export function AdminSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="font-pixel text-[8px]">Quick Stats</SidebarGroupLabel>
           <SidebarGroupContent>
-            {!isCollapsed && (
-              <div className="space-y-2 px-2">
-                <div className="flex items-center justify-between rounded-md bg-sidebar-accent p-2 text-xs font-mono">
-                  <span className="text-sidebar-foreground/70">Teams</span>
-                  <span className="font-semibold text-secondary">{mockTeams.length}</span>
+        {!isCollapsed && (() => {
+              const activeRound = mockRounds.find((r) => r.status === "active") ?? mockRounds[0];
+              return (
+                <div className="space-y-2 px-2">
+                  <div className="flex items-center justify-between rounded-md bg-sidebar-accent p-2 text-xs font-mono">
+                    <span className="text-sidebar-foreground/70">Teams</span>
+                    <span className="font-semibold text-secondary">{teams.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-md bg-primary/10 p-2 text-xs font-mono">
+                    <span className="text-sidebar-foreground/70">Active Round</span>
+                    <span className="font-semibold text-primary">{activeRound?.number ?? "—"}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between rounded-md bg-primary/10 p-2 text-xs font-mono">
-                  <span className="text-sidebar-foreground/70">Active Round</span>
-                  <span className="font-semibold text-primary">1</span>
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
