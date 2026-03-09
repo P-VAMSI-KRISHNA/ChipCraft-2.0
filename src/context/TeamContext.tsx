@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { socket } from "@/lib/socket";
+import { API_BASE } from "@/lib/api";
 import type { Team } from "@/types/hackathon";
 
 interface TeamContextValue {
@@ -15,12 +16,15 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   const [teams, setTeams] = useState<Team[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/teams")
+    fetch(`${API_BASE}/api/teams`)
       .then(res => res.json())
       .then(data => setTeams(data))
       .catch(console.error);
 
-    const onAdd = (team: Team) => setTeams(prev => [...prev, team]);
+    const onAdd = (team: Team) => setTeams(prev => {
+      if (prev.some(t => t.id === team.id)) return prev;
+      return [...prev, team];
+    });
     const onUpdate = (team: Team) => setTeams(prev => prev.map(t => (t.id === team.id ? team : t)));
     const onDelete = ({ id }: { id: string }) => setTeams(prev => prev.filter(t => t.id !== id));
 
@@ -38,9 +42,8 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   const addTeam = async (team: Omit<Team, "id">) => {
     const tempId = `t${Date.now()}`;
     const newTeam = { ...team, id: tempId };
-    setTeams(prev => [...prev, newTeam]);
     try {
-      await fetch("http://localhost:3001/api/teams", {
+      await fetch(`${API_BASE}/api/teams`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTeam)
@@ -49,15 +52,12 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   };
 
   const updateTeam = async (id: string, updates: Partial<Omit<Team, "id">>) => {
-    setTeams(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
     try {
-      const existingRes = await fetch("http://localhost:3001/api/teams");
-      const currentTeams = await existingRes.json();
-      const existing = currentTeams.find((t: Team) => t.id === id) || teams.find(t => t.id === id);
+      const existing = teams.find(t => t.id === id);
       if (!existing) return;
       const updated = { ...existing, ...updates };
 
-      await fetch(`http://localhost:3001/api/teams/${id}`, {
+      await fetch(`${API_BASE}/api/teams/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated)
@@ -66,9 +66,8 @@ export function TeamProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteTeam = async (id: string) => {
-    setTeams(prev => prev.filter(t => t.id !== id));
     try {
-      await fetch(`http://localhost:3001/api/teams/${id}`, {
+      await fetch(`${API_BASE}/api/teams/${id}`, {
         method: "DELETE"
       });
     } catch (err) { console.error(err); }

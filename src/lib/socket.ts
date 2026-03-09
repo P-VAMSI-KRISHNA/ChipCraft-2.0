@@ -1,4 +1,4 @@
 import { io } from "socket.io-client";
+import { API_BASE } from "@/lib/api";
 
-// Local development backend URL
-export const socket = io("http://localhost:3001");
+export const socket = io(API_BASE);

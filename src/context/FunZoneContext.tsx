@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { socket } from "@/lib/socket";
+import { API_BASE } from "@/lib/api";
 
 interface FunZoneContextValue {
   funZoneEnabled: boolean;
@@ -12,13 +13,11 @@ export function FunZoneProvider({ children }: { children: ReactNode }) {
   const [funZoneEnabled, setFunZoneEnabled] = useState(false);
 
   useEffect(() => {
-    // Fetch initial state
-    fetch("http://localhost:3001/api/state/funzone")
+    fetch(`${API_BASE}/api/state/funzone`)
       .then(res => res.json())
       .then(data => setFunZoneEnabled(data.enabled))
       .catch(console.error);
 
-    // Listen for real-time changes
     const handler = (data: { enabled: boolean }) => setFunZoneEnabled(data.enabled);
     socket.on("funzone-updated", handler);
 
@@ -28,10 +27,8 @@ export function FunZoneProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const handleSetFunZoneEnabled = async (enabled: boolean) => {
-    // Optimistic local update
-    setFunZoneEnabled(enabled);
     try {
-      await fetch("http://localhost:3001/api/state/funzone", {
+      await fetch(`${API_BASE}/api/state/funzone`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled })

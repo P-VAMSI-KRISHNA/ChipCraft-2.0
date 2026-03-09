@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { socket } from "@/lib/socket";
+import { API_BASE } from "@/lib/api";
 import type { RoundNumber } from "@/types/hackathon";
 
 // marksMap: teamId → { 1?: number, 2?: number, 3?: number, 4?: number }
@@ -17,7 +18,7 @@ export function MarksProvider({ children }: { children: ReactNode }) {
   const [marksMap, setMarksMap] = useState<MarksMap>({});
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/marks")
+    fetch(`${API_BASE}/api/marks`)
       .then(res => res.json())
       .then(data => {
         const newMap: MarksMap = {};
@@ -47,18 +48,8 @@ export function MarksProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setMark = async (teamId: string, round: RoundNumber, score: number | null) => {
-    // Optimistic local update
-    setMarksMap(prev => {
-      const existing = prev[teamId] ?? {};
-      if (score === null) {
-        const { [round]: _, ...rest } = existing;
-        return { ...prev, [teamId]: rest };
-      }
-      return { ...prev, [teamId]: { ...existing, [round]: score } };
-    });
-
     try {
-      await fetch("http://localhost:3001/api/marks", {
+      await fetch(`${API_BASE}/api/marks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ teamId, round, score })
