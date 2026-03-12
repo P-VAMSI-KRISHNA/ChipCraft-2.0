@@ -9,6 +9,7 @@ import {
   Gamepad2,
   LogOut,
   Trophy,
+  Rocket,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { mockRounds } from "@/data/hackathonData";
@@ -31,6 +32,7 @@ import {
 
 const mainNavItems = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard },
+  { title: "Inauguration", url: "/admin/inauguration", icon: Rocket },
   { title: "Teams", url: "/admin/teams", icon: Users },
   { title: "Round Control", url: "/admin/rounds", icon: Clock },
   { title: "Evaluation", url: "/admin/evaluation", icon: Trophy },

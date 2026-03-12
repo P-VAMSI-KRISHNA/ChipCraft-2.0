@@ -47,6 +47,31 @@ app.post('/api/state/funzone', async (req, res) => {
   }
 });
 
+// Problem Statements Release State
+app.get('/api/state/problems-released', async (req, res) => {
+  try {
+    const result = await db.query('SELECT value FROM app_state WHERE key = $1', ['problemsReleased']);
+    const released = result.rows.length > 0 ? result.rows[0].value : false;
+    res.json({ released });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/state/problems-released', async (req, res) => {
+  const { released } = req.body;
+  try {
+    await db.query(
+      'INSERT INTO app_state (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2',
+      ['problemsReleased', released]
+    );
+    io.emit('problems-released', { released });
+    res.json({ success: true, released });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Teams
 app.get('/api/teams', async (req, res) => {
   try {
