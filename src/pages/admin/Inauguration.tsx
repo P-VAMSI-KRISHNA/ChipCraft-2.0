@@ -72,6 +72,10 @@ export default function Inauguration() {
           pointer-events: none;
           overflow: hidden;
         }
+        .curtain-wrapper.curtain-open {
+          opacity: 0;
+          transition: opacity 1s ease 1s;
+        }
         .curtain-wrapper.interactive { pointer-events: auto; }
 
         .curtain-left, .curtain-right {
@@ -316,6 +320,21 @@ export default function Inauguration() {
         </div>
       </div>
 
+      {/* ========= START BUTTON ABOVE CURTAIN ========= */}
+      {!curtainOpen && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <Button
+            size="lg"
+            className="gap-3 font-pixel text-sm sm:text-base py-8 px-8 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground pointer-events-auto border-2 border-primary/50 shadow-[0_0_40px_rgba(var(--primary),0.4)] hover:scale-105 transition-all duration-300"
+            onClick={() => setConfirmOpen(true)}
+          >
+            <Rocket className="h-6 w-6" />
+            OPEN CURTAINS & RELEASE
+            <PartyPopper className="h-6 w-6" />
+          </Button>
+        </div>
+      )}
+
       {/* ========= MAIN CONTENT (behind curtains) ========= */}
       <div className="relative z-10 p-4 sm:p-6 space-y-6 pt-16 sm:pt-14">
         <div className="text-center">
@@ -389,30 +408,18 @@ export default function Inauguration() {
         </div>
 
         {/* Action */}
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle className="font-mono flex items-center gap-2 text-sm sm:text-base">
-              <Sparkles className="h-5 w-5 text-primary" />
-              {problemsReleased ? "Problem Statements Are Live" : "Ready to Release?"}
-            </CardTitle>
-            <CardDescription className="font-mono text-xs sm:text-sm">
-              {problemsReleased
-                ? "All teams can now view their assigned problem statements on the homepage."
-                : "Once released, the curtains will open and teams can view their problems."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {!problemsReleased ? (
-              <Button
-                size="lg"
-                className="w-full gap-3 font-pixel text-[10px] sm:text-xs py-6 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground transition-all duration-300"
-                onClick={() => setConfirmOpen(true)}
-              >
-                <Rocket className="h-5 w-5" />
-                RELEASE PROBLEM STATEMENTS
-                <PartyPopper className="h-5 w-5" />
-              </Button>
-            ) : (
+        {problemsReleased && (
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader>
+              <CardTitle className="font-mono flex items-center gap-2 text-sm sm:text-base">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Problem Statements Are Live
+              </CardTitle>
+              <CardDescription className="font-mono text-xs sm:text-sm">
+                All teams can now view their assigned problem statements on the homepage.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <Button
                 size="lg"
                 variant="outline"
@@ -422,9 +429,9 @@ export default function Inauguration() {
                 <Lock className="h-4 w-4" />
                 Revoke Access (Close Curtains)
               </Button>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* ========= DIALOGS ========= */}
