@@ -58,13 +58,13 @@ app.get('/api/teams', async (req, res) => {
 });
 
 app.post('/api/teams', async (req, res) => {
-  const { id, teamNumber, teamName } = req.body;
+  const { id, teamNumber, teamName, problemStatementNumber } = req.body;
   try {
     await db.query(
-      'INSERT INTO teams (id, "teamNumber", "teamName") VALUES ($1, $2, $3)',
-      [id, teamNumber, teamName]
+      'INSERT INTO teams (id, "teamNumber", "teamName", "problemStatementNumber") VALUES ($1, $2, $3, $4)',
+      [id, teamNumber, teamName, problemStatementNumber ?? null]
     );
-    const newTeam = { id, teamNumber, teamName };
+    const newTeam = { id, teamNumber, teamName, problemStatementNumber: problemStatementNumber ?? null };
     io.emit('team-added', newTeam);
     res.json(newTeam);
   } catch (err) {
@@ -74,13 +74,13 @@ app.post('/api/teams', async (req, res) => {
 
 app.put('/api/teams/:id', async (req, res) => {
   const { id } = req.params;
-  const { teamNumber, teamName } = req.body;
+  const { teamNumber, teamName, problemStatementNumber } = req.body;
   try {
     await db.query(
-      'UPDATE teams SET "teamNumber" = $1, "teamName" = $2 WHERE id = $3',
-      [teamNumber, teamName, id]
+      'UPDATE teams SET "teamNumber" = $1, "teamName" = $2, "problemStatementNumber" = $3 WHERE id = $4',
+      [teamNumber, teamName, problemStatementNumber ?? null, id]
     );
-    const updatedTeam = { id, teamNumber, teamName };
+    const updatedTeam = { id, teamNumber, teamName, problemStatementNumber: problemStatementNumber ?? null };
     io.emit('team-updated', updatedTeam);
     res.json(updatedTeam);
   } catch (err) {
@@ -93,58 +93,6 @@ app.delete('/api/teams/:id', async (req, res) => {
   try {
     await db.query('DELETE FROM teams WHERE id = $1', [id]);
     io.emit('team-deleted', { id });
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Problem Statements
-app.get('/api/problems', async (req, res) => {
-  try {
-    const result = await db.query('SELECT * FROM problem_statements ORDER BY "teamNumber" ASC');
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/problems', async (req, res) => {
-  const { id, teamNumber, teamName, title, description } = req.body;
-  try {
-    await db.query(
-      'INSERT INTO problem_statements (id, "teamNumber", "teamName", title, description) VALUES ($1, $2, $3, $4, $5)',
-      [id, teamNumber, teamName, title, description]
-    );
-    const newPs = { id, teamNumber, teamName, title, description };
-    io.emit('problem-added', newPs);
-    res.json(newPs);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.put('/api/problems/:id', async (req, res) => {
-  const { id } = req.params;
-  const { teamNumber, teamName, title, description } = req.body;
-  try {
-    await db.query(
-      'UPDATE problem_statements SET "teamNumber" = $1, "teamName" = $2, title = $3, description = $4 WHERE id = $5',
-      [teamNumber, teamName, title, description, id]
-    );
-    const updatedPs = { id, teamNumber, teamName, title, description };
-    io.emit('problem-updated', updatedPs);
-    res.json(updatedPs);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.delete('/api/problems/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    await db.query('DELETE FROM problem_statements WHERE id = $1', [id]);
-    io.emit('problem-deleted', { id });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

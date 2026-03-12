@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
-  List, 
   Users, 
   Clock, 
   BarChart3, 
@@ -32,7 +31,6 @@ import {
 
 const mainNavItems = [
   { title: "Overview", url: "/admin", icon: LayoutDashboard },
-  { title: "Problem Statements", url: "/admin/problems", icon: List },
   { title: "Teams", url: "/admin/teams", icon: Users },
   { title: "Round Control", url: "/admin/rounds", icon: Clock },
   { title: "Evaluation", url: "/admin/evaluation", icon: Trophy },

@@ -27,6 +27,7 @@ export interface Team {
   teamNumber: number;
   teamName: string;
   members: string[];
+  problemStatementNumber?: number;
 }
 
 export interface Game {

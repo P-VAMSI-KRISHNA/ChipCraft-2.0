@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useTeamContext } from "@/context/TeamContext";
 import { useMarksContext } from "@/context/MarksContext";
-import { useProblemContext } from "@/context/ProblemContext";
+import { problemStatements } from "@/data/problemStatements";
 import { mockRounds } from "@/data/hackathonData";
 import {
   BarChart,
@@ -26,7 +26,6 @@ const medalIcons = ["🥇", "🥈", "🥉"];
 export default function Reports() {
   const { teams } = useTeamContext();
   const { getTotal, marksMap } = useMarksContext();
-  const { problemStatements } = useProblemContext();
 
   // Compute ranked teams
   const ranked = [...teams]

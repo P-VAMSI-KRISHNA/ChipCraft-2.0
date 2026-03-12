@@ -14,7 +14,6 @@ import { useLocation } from "react-router-dom";
 
 const breadcrumbMap: Record<string, string> = {
   "/admin": "Overview",
-  "/admin/problems": "Problem Statements",
   "/admin/teams": "Teams",
   "/admin/rounds": "Round Control",
   "/admin/reports": "Reports",

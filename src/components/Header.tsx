@@ -11,16 +11,21 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 sm:gap-3">
           <img
             src="/KARE IEEE EDS - About.png"
             alt="KARE IEEE EDS"
-            className="h-10 w-10 rounded-full border border-foreground/30 bg-white object-contain p-0.5 shadow-sm"
+            className="h-8 w-8 sm:h-10 sm:w-10 rounded-full border border-foreground/30 bg-white object-contain p-0.5 shadow-sm"
           />
-          <div className="flex flex-col">
-            <span className="font-rye text-xl leading-none text-primary tracking-wide">ChipCraft 2.0</span>
-            <span className="text-xs text-muted-foreground font-serif font-bold uppercase tracking-widest">IEEE KARE EDS</span>
+          <div className="flex flex-col items-center">
+            <span className="font-rye text-base sm:text-xl leading-none text-primary tracking-wide">ChipCraft 2.0</span>
+            <span className="hidden xs:block text-[10px] sm:text-xs text-muted-foreground font-typewriter uppercase tracking-widest mt-0.5">24hrs VLSI Hackathon</span>
           </div>
+          <img
+            src="/SSCS.png"
+            alt="SSCS"
+            className="h-8 w-8 sm:h-10 sm:w-10 rounded-full border border-foreground/30 bg-white object-contain p-0.5 shadow-sm"
+          />
         </Link>
 
 
@@ -28,11 +33,17 @@ const Header = () => {
           <a href="#rounds" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Rounds
           </a>
-          <a href="#search" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-            Find Your Team
-          </a>
           <a href="#schedule" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Schedule
+          </a>
+          <a href="#rubrics" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            Rubrics
+          </a>
+          <a href="#guidelines" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            Guidelines
+          </a>
+          <a href="#search" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            Find Your Team
           </a>
           <Button
             size="sm"
@@ -74,11 +85,17 @@ const Header = () => {
             <a href="#rounds" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Rounds
             </a>
-            <a href="#search" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
-              Find Your Team
-            </a>
             <a href="#schedule" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Schedule
+            </a>
+            <a href="#rubrics" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+              Rubrics
+            </a>
+            <a href="#guidelines" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+              Guidelines
+            </a>
+            <a href="#search" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+              Find Your Team
             </a>
             <Button
               size="sm"

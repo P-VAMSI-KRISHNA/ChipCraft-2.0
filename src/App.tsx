@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, RequireAdmin } from "@/context/AuthContext";
-import { ProblemProvider } from "@/context/ProblemContext";
 import { FunZoneProvider } from "@/context/FunZoneContext";
 import { TeamProvider } from "@/context/TeamContext";
 import { MarksProvider } from "@/context/MarksContext";
@@ -12,7 +11,6 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardOverview from "./pages/admin/DashboardOverview";
-import AllComplaints from "./pages/admin/AllComplaints";
 import MyAssignments from "./pages/admin/MyAssignments";
 import Escalations from "./pages/admin/Escalations";
 import Reports from "./pages/admin/Reports";
@@ -31,37 +29,34 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <TeamProvider>
-            <ProblemProvider>
-              <MarksProvider>
-                <FunZoneProvider>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/games" element={<GamesPage />} />
-                    <Route path="/admin/login" element={<AdminLogin />} />
+            <MarksProvider>
+              <FunZoneProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/games" element={<GamesPage />} />
+                  <Route path="/admin/login" element={<AdminLogin />} />
 
-                    {/* Admin Dashboard Routes (protected) */}
-                    <Route
-                      path="/admin"
-                      element={
-                        <RequireAdmin>
-                          <AdminLayout />
-                        </RequireAdmin>
-                      }
-                    >
-                      <Route index element={<DashboardOverview />} />
-                      <Route path="problems" element={<AllComplaints />} />
-                      <Route path="teams" element={<MyAssignments />} />
-                      <Route path="rounds" element={<Escalations />} />
-                      <Route path="evaluation" element={<Evaluation />} />
-                      <Route path="reports" element={<Reports />} />
-                      <Route path="games" element={<Games />} />
-                    </Route>
+                  {/* Admin Dashboard Routes (protected) */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <RequireAdmin>
+                        <AdminLayout />
+                      </RequireAdmin>
+                    }
+                  >
+                    <Route index element={<DashboardOverview />} />
+                    <Route path="teams" element={<MyAssignments />} />
+                    <Route path="rounds" element={<Escalations />} />
+                    <Route path="evaluation" element={<Evaluation />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="games" element={<Games />} />
+                  </Route>
 
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </FunZoneProvider>
-              </MarksProvider>
-            </ProblemProvider>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </FunZoneProvider>
+            </MarksProvider>
           </TeamProvider>
         </AuthProvider>
       </BrowserRouter>
@@ -70,3 +65,4 @@ const App = () => (
 );
 
 export default App;
+

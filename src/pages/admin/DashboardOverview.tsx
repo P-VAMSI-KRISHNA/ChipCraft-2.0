@@ -9,12 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockRounds } from "@/data/hackathonData";
-import { useProblemContext } from "@/context/ProblemContext";
+import { problemStatements, getProblemByNumber } from "@/data/problemStatements";
 import { useTeamContext } from "@/context/TeamContext";
 import { Link } from "react-router-dom";
 
 export default function DashboardOverview() {
-  const { problemStatements } = useProblemContext();
   const { teams } = useTeamContext();
 
   const activeRound = mockRounds.find((r) => r.status === "active") ?? null;
@@ -47,15 +46,15 @@ export default function DashboardOverview() {
         ))}
       </div>
 
-      {/* Recent Problem Statements */}
+      {/* Recent Teams */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="font-mono">Recent Problem Statements</CardTitle>
-            <CardDescription className="font-mono">Latest assigned problems</CardDescription>
+            <CardTitle className="font-mono">Recent Teams</CardTitle>
+            <CardDescription className="font-mono">Latest registered teams</CardDescription>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/admin/problems">
+            <Link to="/admin/teams">
               View All
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
@@ -63,19 +62,24 @@ export default function DashboardOverview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {problemStatements.slice(0, 5).map((ps) => (
-              <div key={ps.id} className="flex items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-muted/50">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-pixel text-xs">
-                  #{ps.teamNumber}
+            {teams.slice(-5).reverse().map((team) => {
+              const ps = team.problemStatementNumber ? getProblemByNumber(team.problemStatementNumber) : null;
+              return (
+                <div key={team.id} className="flex items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-muted/50">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-pixel text-xs">
+                    #{team.teamNumber}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-mono text-xs text-muted-foreground">{team.teamName}</span>
+                    <p className="font-medium truncate">
+                      {ps ? `PS#${team.problemStatementNumber}: ${ps.title}` : "No problem assigned"}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <span className="font-mono text-xs text-muted-foreground">{ps.teamName}</span>
-                  <p className="font-medium truncate">{ps.title}</p>
-                </div>
-              </div>
-            ))}
-            {problemStatements.length === 0 && (
-              <p className="text-sm text-muted-foreground font-mono text-center py-4">No problem statements yet.</p>
+              );
+            })}
+            {teams.length === 0 && (
+              <p className="text-sm text-muted-foreground font-mono text-center py-4">No teams registered yet.</p>
             )}
           </div>
         </CardContent>
@@ -103,3 +107,4 @@ export default function DashboardOverview() {
     </div>
   );
 }
+

@@ -7,9 +7,9 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative overflow-hidden py-16 lg:py-24 bg-paper min-h-screen flex flex-col justify-center border-b-[12px] border-double border-border">
-      {/* Detailed Vintage Newspaper Background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.05] flex justify-between gap-8 px-8 mix-blend-multiply">
+    <section className="relative overflow-hidden py-10 sm:py-16 lg:py-24 bg-paper min-h-screen flex flex-col justify-center border-b-[8px] sm:border-b-[12px] border-double border-border">
+      {/* Detailed Vintage Newspaper Background — hidden on mobile for performance */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.05] hidden md:flex justify-between gap-8 px-8 mix-blend-multiply">
         {/* Faint Newspaper Columns */}
         <div className="w-1/4 h-full border-r border-foreground/30 flex flex-col pt-12 gap-4 whitespace-normal text-justify">
           <h4 className="font-rye text-3xl mb-2 text-foreground">Local News</h4>
@@ -43,34 +43,32 @@ const Hero = () => {
         <div className="absolute bottom-[10%] right-[20%] w-96 h-96 bg-primary rounded-full blur-3xl opacity-10"></div>
       </div>
 
-      <div className="container relative z-10">
-        <div className="mx-auto max-w-5xl text-center space-y-6">
+      <div className="container relative z-10 px-4 sm:px-6">
+        <div className="mx-auto max-w-5xl text-center space-y-4 sm:space-y-6">
           
-          <div className="py-4 overflow-hidden pl-2">
-            <h1 className="font-rye text-5xl md:text-7xl lg:text-[7.5rem] whitespace-nowrap text-foreground drop-shadow-md uppercase leading-none" style={{ textShadow: '4px 4px 0px hsl(var(--card))' }}>
+          <div className="py-2 sm:py-4 overflow-hidden">
+            <h1 className="font-rye text-4xl sm:text-5xl md:text-7xl lg:text-[7.5rem] text-foreground drop-shadow-md uppercase leading-tight sm:leading-none" style={{ textShadow: '3px 3px 0px hsl(var(--card))' }}>
               ChipCraft 2.0
             </h1>
           </div>
 
-          <p className="font-serif text-lg md:text-xl font-bold inline-block px-4 py-1">
-            Dates: 13<sup className="font-normal text-sm">th</sup> March to 14<sup className="font-normal text-sm">th</sup> March, 2026
+          <p className="font-serif text-base sm:text-lg md:text-xl font-bold inline-block px-3 sm:px-4 py-1">
+            Dates: 13<sup className="font-normal text-xs sm:text-sm">th</sup> March to 14<sup className="font-normal text-xs sm:text-sm">th</sup> March, 2026
           </p>
 
-          <div className="my-10 p-8 border-4 border-double border-foreground bg-card/60 mx-auto max-w-4xl relative vintage-shadow">
-            <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 bg-paper px-6 border-x-4 border-foreground">
-              <span className="font-sans font-bold text-sm tracking-widest uppercase border-b border-foreground pb-0.5">
+          <div className="my-6 sm:my-10 p-4 sm:p-6 md:p-8 border-2 sm:border-4 border-double border-foreground bg-card/60 mx-auto max-w-4xl relative vintage-shadow">
+            <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 bg-paper px-4 sm:px-6 border-x-2 sm:border-x-4 border-foreground">
+              <span className="font-sans font-bold text-xs sm:text-sm tracking-widest uppercase border-b border-foreground pb-0.5">
                 About the event:
               </span>
             </div>
-            <p className="font-serif text-lg md:text-xl leading-relaxed mt-4 text-justify">
-              ChipCraft is a <strong className="font-sans text-xl tracking-wide mx-1 font-bold">"24 - hour Hackathon"</strong> event, where participants work on <span className="italic">Real - world</span> problem statements, implementing the designs using Verilog HDL, validating functionality through simulation and testbenches, and performing logic synthesis to generate gate-level netlists using <strong>Synopsys EDA tools</strong>.
+            <p className="font-serif text-base sm:text-lg md:text-xl leading-relaxed mt-3 sm:mt-4 text-justify">
+              ChipCraft is a <strong className="font-sans text-base sm:text-xl tracking-wide mx-0.5 sm:mx-1 font-bold">"24 - hour Hackathon"</strong> event, where participants work on <span className="italic">Real - world</span> problem statements, implementing the designs using Verilog HDL, validating functionality through simulation and testbenches, and performing logic synthesis to generate gate-level netlists using <strong>Synopsys EDA tools</strong>.
             </p>
           </div>
 
-
-
-          <div className="pt-4 pb-8 flex justify-center opacity-90">
-            <Button size="lg" onClick={scrollToSearch} className="font-rye text-2xl px-12 py-8 rounded-none border-4 border-foreground bg-transparent hover:bg-foreground hover:text-background transition-colors text-foreground uppercase tracking-widest shadow-[8px_8px_0_hsl(var(--foreground))] active:shadow-none active:translate-x-2 active:translate-y-2">
+          <div className="pt-2 sm:pt-4 pb-6 sm:pb-8 flex justify-center opacity-90">
+            <Button size="lg" onClick={scrollToSearch} className="font-rye text-lg sm:text-2xl px-6 sm:px-12 py-5 sm:py-8 rounded-none border-2 sm:border-4 border-foreground bg-transparent hover:bg-foreground hover:text-background transition-colors text-foreground uppercase tracking-wider sm:tracking-widest shadow-[4px_4px_0_hsl(var(--foreground))] sm:shadow-[8px_8px_0_hsl(var(--foreground))] active:shadow-none active:translate-x-1 active:translate-y-1 sm:active:translate-x-2 sm:active:translate-y-2">
               Find Your Team
             </Button>
           </div>

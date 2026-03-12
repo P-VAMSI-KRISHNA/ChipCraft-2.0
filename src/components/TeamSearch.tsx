@@ -1,16 +1,23 @@
 import { useState } from "react";
-import { Search, Cpu, AlertTriangle } from "lucide-react";
+import { Search, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useProblemContext } from "@/context/ProblemContext";
-import type { ProblemStatement } from "@/types/hackathon";
+import { useTeamContext } from "@/context/TeamContext";
+import { getProblemByNumber } from "@/data/problemStatements";
+import type { Team } from "@/types/hackathon";
+import type { StaticProblemStatement } from "@/data/problemStatements";
+
+interface SearchResult {
+  team: Team;
+  problem: StaticProblemStatement | null;
+}
 
 const TeamSearch = () => {
-  const { problemStatements } = useProblemContext();
+  const { teams } = useTeamContext();
   const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState<ProblemStatement[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [notFound, setNotFound] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -24,17 +31,30 @@ const TeamSearch = () => {
     }
 
     const teamNum = parseInt(query, 10);
+    let matchedTeams: Team[] = [];
+
     if (!isNaN(teamNum) && String(teamNum) === query) {
-      const found = problemStatements.find((ps) => ps.teamNumber === teamNum);
-      if (found) { setResults([found]); setNotFound(false); }
-      else { setResults([]); setNotFound(true); }
+      const found = teams.find((t) => t.teamNumber === teamNum);
+      if (found) matchedTeams = [found];
     } else {
       const lowerQuery = query.toLowerCase();
-      const matches = problemStatements.filter(
-        (ps) => ps.teamName.toLowerCase().includes(lowerQuery)
+      matchedTeams = teams.filter((t) =>
+        t.teamName.toLowerCase().includes(lowerQuery)
       );
-      if (matches.length > 0) { setResults(matches); setNotFound(false); }
-      else { setResults([]); setNotFound(true); }
+    }
+
+    if (matchedTeams.length > 0) {
+      const searchResults: SearchResult[] = matchedTeams.map((team) => ({
+        team,
+        problem: team.problemStatementNumber
+          ? getProblemByNumber(team.problemStatementNumber) ?? null
+          : null,
+      }));
+      setResults(searchResults);
+      setNotFound(false);
+    } else {
+      setResults([]);
+      setNotFound(true);
     }
     setSearched(true);
   };
@@ -44,34 +64,33 @@ const TeamSearch = () => {
   };
 
   return (
-    <section id="search" className="py-20">
-      <div className="container">
+    <section id="search" className="py-12 sm:py-20">
+      <div className="container px-4 sm:px-6">
         <div className="mx-auto max-w-2xl">
-          <div className="mb-8 text-center">
-            <h2 className="mb-4 font-rye text-3xl text-foreground uppercase tracking-widest sm:text-4xl">
+          <div className="mb-6 sm:mb-8 text-center">
+            <h2 className="mb-3 sm:mb-4 font-rye text-2xl sm:text-3xl text-foreground uppercase tracking-widest sm:text-4xl">
               FIND YOUR TEAM
             </h2>
-            <p className="text-muted-foreground font-sans text-lg">
+            <p className="text-muted-foreground font-sans text-base sm:text-lg">
               Enter your team number or team name to view your problem statement
             </p>
           </div>
 
-          {/* Search Box */}
-          <Card className="mb-8 vintage-border bg-card/60 vintage-shadow">
-            <CardContent className="pt-6">
-              <div className="flex gap-3">
+          <Card className="mb-6 sm:mb-8 vintage-border bg-card/60 vintage-shadow">
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 sm:h-5 sm:w-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Enter team number or name (e.g., 1, Byte Busters…)"
+                    placeholder="Team number or name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="pl-11 font-sans text-lg h-12 bg-transparent"
+                    className="pl-10 sm:pl-11 font-sans text-base sm:text-lg h-11 sm:h-12 bg-transparent"
                   />
                 </div>
-                <Button onClick={handleSearch} size="lg" className="font-rye text-xl gap-2 tracking-widest border-2 border-foreground bg-primary hover:bg-primary/90 text-primary-foreground transition-all">
-                  <Search className="h-5 w-5" />
+                <Button onClick={handleSearch} size="lg" className="font-rye text-base sm:text-xl gap-2 tracking-widest border-2 border-foreground bg-primary hover:bg-primary/90 text-primary-foreground transition-all w-full sm:w-auto h-11 sm:h-auto">
+                  <Search className="h-4 w-4 sm:h-5 sm:w-5" />
                   Search
                 </Button>
               </div>
@@ -99,23 +118,50 @@ const TeamSearch = () => {
 
           {/* Problem Statement Display */}
           <div className="space-y-6">
-            {results.map((result) => (
-              <Card key={result.id} className="vintage-border bg-card/60 ink-stamp relative overflow-hidden p-2">
-                <CardHeader className="pb-4 border-b-2 border-dashed border-border mb-4">
+            {results.map(({ team, problem }) => (
+              <Card key={team.id} className="vintage-border bg-card/60 ink-stamp relative overflow-hidden p-1 sm:p-2">
+                <CardHeader className="pb-3 sm:pb-4 border-b-2 border-dashed border-border mb-3 sm:mb-4 px-3 sm:px-6">
                   <div>
-                    <span className="font-sans font-bold tracking-widest text-muted-foreground uppercase text-xs">TEAM #{result.teamNumber}</span>
-                    <CardTitle className="font-rye text-3xl text-primary mt-1">{result.teamName}</CardTitle>
+                    <span className="font-sans font-bold tracking-widest text-muted-foreground uppercase text-[10px] sm:text-xs">TEAM #{team.teamNumber}</span>
+                    <CardTitle className="font-rye text-xl sm:text-3xl text-primary mt-1">{team.teamName}</CardTitle>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Problem Title */}
-                  <div>
-                    <p className="font-sans font-bold tracking-widest uppercase border-b border-foreground pb-1 mb-3 text-muted-foreground text-xs inline-block">PROBLEM STATEMENT</p>
-                    <h3 className="text-2xl font-serif font-bold text-foreground mt-2">{result.title}</h3>
-                    <p className="mt-3 text-foreground/90 font-serif text-lg leading-relaxed text-justify">
-                      {result.description}
-                    </p>
-                  </div>
+                <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">
+                  {problem ? (
+                    <>
+                      {/* Problem Title */}
+                      <div>
+                        <p className="font-sans font-bold tracking-widest uppercase border-b border-foreground pb-1 mb-3 text-muted-foreground text-xs inline-block">
+                          PROBLEM STATEMENT #{team.problemStatementNumber}
+                        </p>
+                        <h3 className="text-2xl font-serif font-bold text-foreground mt-2">{problem.title}</h3>
+                        <p className="mt-3 text-foreground/90 font-serif text-lg leading-relaxed text-justify">
+                          {problem.description}
+                        </p>
+                      </div>
+
+                      {/* Expected Features */}
+                      <div>
+                        <p className="font-sans font-bold tracking-widest uppercase border-b border-foreground pb-1 mb-3 text-muted-foreground text-xs inline-block">
+                          EXPECTED FEATURES
+                        </p>
+                        <ul className="space-y-2 mt-2">
+                          {problem.features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-1" />
+                              <span className="font-serif text-base text-foreground/85">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="font-serif text-lg text-muted-foreground italic">
+                        No problem statement has been assigned to this team yet. Please check with the organizers.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}

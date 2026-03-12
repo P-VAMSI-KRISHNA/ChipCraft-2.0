@@ -21,25 +21,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTeamContext } from "@/context/TeamContext";
-import { useProblemContext } from "@/context/ProblemContext";
 import { useToast } from "@/hooks/use-toast";
+import { problemStatements, getProblemByNumber } from "@/data/problemStatements";
 import type { Team } from "@/types/hackathon";
 
 interface FormState {
   teamNumber: string;
   teamName: string;
+  problemStatementNumber: string;
 }
 
-const emptyForm: FormState = { teamNumber: "", teamName: "" };
+const emptyForm: FormState = { teamNumber: "", teamName: "", problemStatementNumber: "" };
 
 function teamToForm(t: Team): FormState {
-  return { teamNumber: String(t.teamNumber), teamName: t.teamName };
+  return {
+    teamNumber: String(t.teamNumber),
+    teamName: t.teamName,
+    problemStatementNumber: t.problemStatementNumber ? String(t.problemStatementNumber) : "",
+  };
 }
 
 export default function MyAssignments() {
   const { teams, addTeam, updateTeam, deleteTeam } = useTeamContext();
-  const { problemStatements } = useProblemContext();
   const { toast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,6 +90,7 @@ export default function MyAssignments() {
       setFormError("Team name is required.");
       return;
     }
+
     // Check duplicate team number (except self)
     const duplicate = teams.find(
       (t) => t.teamNumber === num && t.id !== editingId
@@ -88,11 +100,27 @@ export default function MyAssignments() {
       return;
     }
 
+    // Validate problem statement number
+    const psNum = form.problemStatementNumber ? parseInt(form.problemStatementNumber, 10) : undefined;
+    if (psNum !== undefined && (isNaN(psNum) || psNum < 1 || psNum > 40)) {
+      setFormError("Problem statement number must be between 1 and 40.");
+      return;
+    }
+
     if (editingId) {
-      updateTeam(editingId, { teamNumber: num, teamName: form.teamName.trim() });
+      updateTeam(editingId, {
+        teamNumber: num,
+        teamName: form.teamName.trim(),
+        problemStatementNumber: psNum ?? undefined,
+      });
       toast({ title: "Team updated", description: `Team #${num} — ${form.teamName.trim()}` });
     } else {
-      addTeam({ teamNumber: num, teamName: form.teamName.trim(), members: [] });
+      addTeam({
+        teamNumber: num,
+        teamName: form.teamName.trim(),
+        members: [],
+        problemStatementNumber: psNum ?? undefined,
+      });
       toast({ title: "Team added", description: `Team #${num} — ${form.teamName.trim()} registered.` });
     }
     setDialogOpen(false);
@@ -120,12 +148,15 @@ export default function MyAssignments() {
   // Sorted teams by team number
   const sortedFiltered = [...filteredTeams].sort((a, b) => a.teamNumber - b.teamNumber);
 
+  const teamsWithProblems = teams.filter((t) => t.problemStatementNumber).length;
+  const teamsWithoutProblems = teams.length - teamsWithProblems;
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="font-pixel text-sm text-secondary neon-glow-cyan">TEAMS</h1>
-          <p className="text-muted-foreground font-mono">Manage registered teams</p>
+          <p className="text-muted-foreground font-mono">Manage registered teams &amp; assign problem statements</p>
         </div>
         <Button onClick={openAdd} className="gap-2 font-mono">
           <Plus className="h-4 w-4" />
@@ -145,12 +176,10 @@ export default function MyAssignments() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground font-mono">With Problems</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground font-mono">With Problem</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-pixel text-primary">
-              {teams.filter((t) => problemStatements.some((ps) => ps.teamNumber === t.teamNumber)).length}
-            </div>
+            <div className="text-3xl font-bold font-pixel text-primary">{teamsWithProblems}</div>
           </CardContent>
         </Card>
         <Card>
@@ -158,9 +187,7 @@ export default function MyAssignments() {
             <CardTitle className="text-sm text-muted-foreground font-mono">No Problem Yet</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-pixel text-warning">
-              {teams.filter((t) => !problemStatements.some((ps) => ps.teamNumber === t.teamNumber)).length}
-            </div>
+            <div className="text-3xl font-bold font-pixel text-warning">{teamsWithoutProblems}</div>
           </CardContent>
         </Card>
       </div>
@@ -198,23 +225,30 @@ export default function MyAssignments() {
                 <TableRow>
                   <TableHead className="font-pixel text-[10px]">Team #</TableHead>
                   <TableHead className="font-pixel text-[10px]">Team Name</TableHead>
-                  <TableHead className="font-pixel text-[10px]">Problem Assigned</TableHead>
+                  <TableHead className="font-pixel text-[10px]">Problem Statement</TableHead>
                   <TableHead className="text-right font-pixel text-[10px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sortedFiltered.map((team) => {
-                  const ps = problemStatements.find((p) => p.teamNumber === team.teamNumber);
+                  const ps = team.problemStatementNumber
+                    ? getProblemByNumber(team.problemStatementNumber)
+                    : null;
                   return (
                     <TableRow key={team.id}>
                       <TableCell className="font-pixel text-xs text-secondary">#{team.teamNumber}</TableCell>
                       <TableCell className="font-mono text-sm font-semibold">{team.teamName}</TableCell>
                       <TableCell>
                         {ps ? (
-                          <span className="font-mono text-sm text-foreground/80 truncate max-w-[200px] block">{ps.title}</span>
+                          <span className="font-mono text-sm text-foreground/80 truncate max-w-[250px] block">
+                            <Badge variant="outline" className="font-pixel text-[9px] mr-1 text-primary border-primary/40">
+                              PS#{team.problemStatementNumber}
+                            </Badge>
+                            {ps.title}
+                          </span>
                         ) : (
                           <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground border-muted-foreground/30">
-                            No problem yet
+                            Not assigned
                           </Badge>
                         )}
                       </TableCell>
@@ -263,25 +297,45 @@ export default function MyAssignments() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-2">
-            <div className="space-y-1">
-              <Label className="font-pixel text-[9px] text-muted-foreground">TEAM NUMBER *</Label>
-              <Input
-                type="number"
-                min={1}
-                value={form.teamNumber}
-                onChange={(e) => setField("teamNumber", e.target.value)}
-                className="font-mono"
-                placeholder="e.g. 9"
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label className="font-pixel text-[9px] text-muted-foreground">TEAM NUMBER *</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={form.teamNumber}
+                  onChange={(e) => setField("teamNumber", e.target.value)}
+                  className="font-mono"
+                  placeholder="e.g. 9"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="font-pixel text-[9px] text-muted-foreground">TEAM NAME *</Label>
+                <Input
+                  value={form.teamName}
+                  onChange={(e) => setField("teamName", e.target.value)}
+                  className="font-mono"
+                  placeholder="e.g. Silicon Sorcerers"
+                />
+              </div>
             </div>
             <div className="space-y-1">
-              <Label className="font-pixel text-[9px] text-muted-foreground">TEAM NAME *</Label>
-              <Input
-                value={form.teamName}
-                onChange={(e) => setField("teamName", e.target.value)}
-                className="font-mono"
-                placeholder="e.g. Silicon Sorcerers"
-              />
+              <Label className="font-pixel text-[9px] text-muted-foreground">PROBLEM STATEMENT (1–40)</Label>
+              <Select
+                value={form.problemStatementNumber}
+                onValueChange={(val) => setField("problemStatementNumber", val)}
+              >
+                <SelectTrigger className="font-mono text-sm">
+                  <SelectValue placeholder="Select a problem statement…" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {problemStatements.map((ps) => (
+                    <SelectItem key={ps.number} value={String(ps.number)} className="font-mono text-xs">
+                      #{ps.number} — {ps.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             {formError && (
               <p className="text-sm text-destructive font-mono border border-destructive/30 rounded-md bg-destructive/5 px-3 py-2">

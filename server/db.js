@@ -15,7 +15,8 @@ async function initDB() {
       CREATE TABLE IF NOT EXISTS teams (
         id VARCHAR(255) PRIMARY KEY,
         "teamNumber" INTEGER UNIQUE NOT NULL,
-        "teamName" VARCHAR(255) NOT NULL
+        "teamName" VARCHAR(255) NOT NULL,
+        "problemStatementNumber" INTEGER
       );
     `);
 
@@ -56,6 +57,15 @@ async function initDB() {
     `);
 
     await client.query('COMMIT');
+
+    // --- Migrations for existing databases ---
+    // Add problemStatementNumber column to teams if it doesn't exist
+    try {
+      await client.query(`
+        ALTER TABLE teams ADD COLUMN IF NOT EXISTS "problemStatementNumber" INTEGER;
+      `);
+    } catch (_) { /* column already exists or ALTER not supported — safe to ignore */ }
+
     console.log('Database initialized successfully');
   } catch (error) {
     await client.query('ROLLBACK');
