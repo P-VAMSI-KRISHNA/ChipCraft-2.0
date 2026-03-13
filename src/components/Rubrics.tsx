@@ -76,7 +76,7 @@ const rubrics: RoundRubric[] = [
     round: 2,
     title: "RTL Simulation & Verification",
     totalMarks: "24M",
-    excellentLabel: "Excellent (5)",
+    excellentLabel: "Excellent (4)",
     criteria: [
       {
         id: "r2-1",

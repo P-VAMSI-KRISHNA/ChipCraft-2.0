@@ -1,4 +1,4 @@
-import { Lightbulb, Code, Cpu, Presentation, Clock, ChevronRight } from "lucide-react";
+import { Lightbulb, Code, Cpu, Presentation, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { mockRounds } from "@/data/hackathonData";
@@ -43,10 +43,7 @@ const RoundsInfo = () => {
                         <CardTitle className="text-base sm:text-lg text-foreground">{round.name}</CardTitle>
                       </div>
                     </div>
-                    <Badge variant="outline" className="font-mono text-xs w-fit">
-                      <Clock className="mr-1 h-3 w-3" />
-                      {round.durationMinutes}min
-                    </Badge>
+
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">

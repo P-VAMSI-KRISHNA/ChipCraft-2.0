@@ -30,21 +30,21 @@ const Header = () => {
 
 
         <nav className="hidden items-center gap-6 md:flex">
-          <a href="#rounds" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          <Link to="/#rounds" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Rounds
-          </a>
-          <a href="#schedule" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          </Link>
+          <Link to="/#schedule" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Schedule
-          </a>
-          <a href="#rubrics" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          </Link>
+          <Link to="/#rubrics" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Rubrics
-          </a>
-          <a href="#guidelines" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          </Link>
+          <Link to="/#guidelines" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Guidelines
-          </a>
-          <a href="#search" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          </Link>
+          <Link to="/#search" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Find Your Team
-          </a>
+          </Link>
           <Button
             size="sm"
             variant="outline"
@@ -82,21 +82,21 @@ const Header = () => {
       {mobileMenuOpen && (
         <div className="border-t border-border bg-card p-4 md:hidden">
           <nav className="flex flex-col gap-3">
-            <a href="#rounds" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/#rounds" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Rounds
-            </a>
-            <a href="#schedule" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+            </Link>
+            <Link to="/#schedule" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Schedule
-            </a>
-            <a href="#rubrics" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+            </Link>
+            <Link to="/#rubrics" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Rubrics
-            </a>
-            <a href="#guidelines" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+            </Link>
+            <Link to="/#guidelines" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Guidelines
-            </a>
-            <a href="#search" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
+            </Link>
+            <Link to="/#search" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Find Your Team
-            </a>
+            </Link>
             <Button
               size="sm"
               variant="outline"
