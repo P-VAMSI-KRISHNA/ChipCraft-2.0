@@ -51,7 +51,7 @@ const RoundsInfo = () => {
 
 
                   <div className="space-y-1.5 sm:space-y-2">
-                    <p className="font-pixel text-[9px] sm:text-[10px] text-muted-foreground">INSTRUCTIONS:</p>
+                    <p className="font-pixel text-[9px] sm:text-[10px] text-muted-foreground">DELIVERABLES:</p>
                     {round.instructions.map((instruction, i) => (
                       <div key={i} className="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm text-foreground/80">
                         <ChevronRight className={`mt-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${roundAccents[index]}`} />
