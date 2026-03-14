@@ -1,12 +1,14 @@
-import { Menu, X, Gamepad2 } from "lucide-react";
+import { Menu, X, Gamepad2, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useFunZone } from "@/context/FunZoneContext";
+import { useResultsContext } from "@/context/ResultsContext";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { funZoneEnabled } = useFunZone();
+  const { resultsState } = useResultsContext();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -45,6 +47,11 @@ const Header = () => {
           <Link to="/#search" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Find Your Team
           </Link>
+          {resultsState > 0 && (
+            <Link to="/#results" className="text-sm font-medium text-warning transition-colors hover:text-warning/80 flex items-center gap-1">
+              <Award className="h-3.5 w-3.5" />Results
+            </Link>
+          )}
           <Button
             size="sm"
             variant="outline"
@@ -97,6 +104,11 @@ const Header = () => {
             <Link to="/#search" className="text-sm font-medium text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
               Find Your Team
             </Link>
+            {resultsState > 0 && (
+              <Link to="/#results" className="text-sm font-medium text-warning flex items-center gap-1" onClick={() => setMobileMenuOpen(false)}>
+                <Award className="h-3.5 w-3.5" />Results
+              </Link>
+            )}
             <Button
               size="sm"
               variant="outline"

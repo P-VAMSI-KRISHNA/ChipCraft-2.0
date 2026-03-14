@@ -8,6 +8,7 @@ import { FunZoneProvider } from "@/context/FunZoneContext";
 import { ProblemReleaseProvider } from "@/context/ProblemReleaseContext";
 import { TeamProvider } from "@/context/TeamContext";
 import { MarksProvider } from "@/context/MarksContext";
+import { ResultsProvider } from "@/context/ResultsContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminLayout from "./layouts/AdminLayout";
@@ -20,6 +21,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import GamesPage from "./pages/GamesPage";
 import Evaluation from "./pages/admin/Evaluation";
 import Inauguration from "./pages/admin/Inauguration";
+import Valedictory from "./pages/admin/Valedictory";
 
 const queryClient = new QueryClient();
 
@@ -32,9 +34,10 @@ const App = () => (
         <AuthProvider>
           <TeamProvider>
             <MarksProvider>
-              <FunZoneProvider>
-                <ProblemReleaseProvider>
-                  <Routes>
+              <ResultsProvider>
+                <FunZoneProvider>
+                  <ProblemReleaseProvider>
+                    <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/games" element={<GamesPage />} />
                     <Route path="/admin/login" element={<AdminLogin />} />
@@ -53,6 +56,7 @@ const App = () => (
                       <Route path="teams" element={<MyAssignments />} />
                       <Route path="rounds" element={<Escalations />} />
                       <Route path="evaluation" element={<Evaluation />} />
+                      <Route path="valedictory" element={<Valedictory />} />
                       <Route path="reports" element={<Reports />} />
                       <Route path="games" element={<Games />} />
                     </Route>
@@ -61,7 +65,8 @@ const App = () => (
                   </Routes>
                 </ProblemReleaseProvider>
               </FunZoneProvider>
-            </MarksProvider>
+            </ResultsProvider>
+          </MarksProvider>
           </TeamProvider>
         </AuthProvider>
       </BrowserRouter>

@@ -72,6 +72,39 @@ app.post('/api/state/problems-released', async (req, res) => {
   }
 });
 
+// Results Announcement State + Winners Data
+app.get('/api/state/results-state', async (req, res) => {
+  try {
+    const stateResult = await db.query('SELECT value FROM app_state WHERE key = $1', ['resultsState']);
+    const winnersResult = await db.query('SELECT value FROM app_state WHERE key = $1', ['resultsWinners']);
+    const state = stateResult.rows.length > 0 ? parseInt(stateResult.rows[0].value, 10) : 0;
+    const winners = winnersResult.rows.length > 0 ? winnersResult.rows[0].value : null;
+    res.json({ state, winners });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/state/results-state', async (req, res) => {
+  const { state, winners } = req.body;
+  try {
+    await db.query(
+      'INSERT INTO app_state (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2',
+      ['resultsState', state.toString()]
+    );
+    if (winners) {
+      await db.query(
+        'INSERT INTO app_state (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2',
+        ['resultsWinners', JSON.stringify(winners)]
+      );
+    }
+    io.emit('results-state-updated', { state, winners: winners || null });
+    res.json({ success: true, state });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Teams
 app.get('/api/teams', async (req, res) => {
   try {

@@ -7,6 +7,7 @@ import HowItWorks from "@/components/HowItWorks";
 import Rubrics from "@/components/Rubrics";
 import Guidelines from "@/components/Guidelines";
 import TeamSearch from "@/components/TeamSearch";
+import ResultsDisplay from "@/components/ResultsDisplay";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -31,6 +32,7 @@ const Index = () => {
       <Header />
       <main>
         <Hero />
+        <ResultsDisplay />
         <RoundsInfo />
         <HowItWorks />
         <Rubrics />
